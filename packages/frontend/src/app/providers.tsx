@@ -77,9 +77,44 @@ export function Providers({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
-  // Return empty div during SSR to prevent hydration errors
+  // Return loading state during SSR or while config is being created
   if (!mounted || !config) {
-    return <div style={{ minHeight: '100vh', background: '#0a0a0a' }} />
+    return (
+      <div style={{ 
+        minHeight: '100vh', 
+        background: '#0a0a0a',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: '#fff',
+        fontFamily: 'Inter, sans-serif'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ 
+            fontSize: '1.5rem', 
+            marginBottom: '1rem',
+            color: '#28A0F0'
+          }}>
+            Loading BuildKit Stylus...
+          </div>
+          <div style={{ 
+            width: '40px', 
+            height: '40px', 
+            border: '3px solid rgba(40, 160, 240, 0.3)',
+            borderTop: '3px solid #28A0F0',
+            borderRadius: '50%',
+            margin: '0 auto',
+            animation: 'spin 1s linear infinite'
+          }} />
+          <style>{`
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          `}</style>
+        </div>
+      </div>
+    )
   }
 
   return (
