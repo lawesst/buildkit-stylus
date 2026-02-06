@@ -1,0 +1,14 @@
+{
+  "network": "arbitrum-sepolia",
+  "chain_id": 421614,
+  "deployed_at": "2024-01-01T00:00:00Z",
+  "contracts": {
+    "nft": {
+      "address": "0x0000000000000000000000000000000000000000",
+      "deployed_at": "2024-01-01T00:00:00Z",
+      "transaction_hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "block_number": 0,
+      "abi_path": "abis/nft.json"
+    }
+  }
+}

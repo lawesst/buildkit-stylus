@@ -1,0 +1,20 @@
+{
+  "name": "@buildkit/stylus-contracts",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Stylus smart contracts for Arbitrum",
+  "scripts": {
+    "build": "cargo stylus build",
+    "deploy": "cargo stylus deploy --network sepolia",
+    "deploy:all": "cargo stylus deploy --network sepolia",
+    "deploy:nft": "cargo stylus deploy --network sepolia --contract nft",
+    "generate-abi": "cargo stylus generate-abi",
+    "check": "cargo check",
+    "clean": "cargo clean",
+    "deploy:script": "./scripts/deploy.sh",
+    "balance": "./scripts/check-balance.sh"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

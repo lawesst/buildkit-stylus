@@ -1,0 +1,53 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+build/
+*.wasm
+target/
+
+# Stylus
+.stylus/
+*.so
+packages/stylus-contracts/deployments/*.json
+!packages/stylus-contracts/deployments/*.example
+
+# Environment
+.env
+.env.local
+.env*.local
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+coverage/
+.nyc_output/
+
+# Misc
+.cache/
+.turbo/
+
+# Indexer data
+packages/indexer/data/
+packages/indexer/*.db
+packages/indexer/*.json
+!packages/indexer/package.json
+!packages/indexer/tsconfig.json
+!packages/indexer/README.md
