@@ -109,9 +109,18 @@ export function RecentEvents({ indexerApi }: RecentEventsProps) {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           {events.map((event) => {
-            const eventData = typeof event.event_data === 'string'
+            let eventData: any = typeof event.event_data === 'string'
               ? JSON.parse(event.event_data)
               : event.event_data
+            
+            // Handle array format from indexer (ethers.js returns args as array)
+            if (Array.isArray(eventData) && event.event_name === 'Transfer') {
+              eventData = {
+                from: eventData[0] || '0x0',
+                to: eventData[1] || '0x0',
+                tokenId: eventData[2] || '0',
+              }
+            }
 
             return (
               <div

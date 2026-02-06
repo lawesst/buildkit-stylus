@@ -35,9 +35,18 @@ export function StatsCards({ indexerApi }: StatsCardsProps) {
           if (transferEvents.success) {
             const uniqueAddresses = new Set<string>()
             transferEvents.events.forEach((event: any) => {
-              const eventData = typeof event.event_data === 'string' 
+              let eventData: any = typeof event.event_data === 'string' 
                 ? JSON.parse(event.event_data) 
                 : event.event_data
+              
+              // Handle array format from indexer (ethers.js returns args as array)
+              if (Array.isArray(eventData)) {
+                eventData = {
+                  from: eventData[0] || '0x0',
+                  to: eventData[1] || '0x0',
+                  tokenId: eventData[2] || '0',
+                }
+              }
               
               // Transfer events have 'to' field (recipient)
               if (eventData.to) {
