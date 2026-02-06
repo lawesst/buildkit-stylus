@@ -120,7 +120,7 @@ export function StatsCards({ indexerApi }: StatsCardsProps) {
   return (
     <div style={{ 
       display: 'grid', 
-      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+      gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', 
       gap: '1rem',
       marginBottom: '1.5rem'
     }}>
@@ -132,15 +132,24 @@ export function StatsCards({ indexerApi }: StatsCardsProps) {
             padding: '1.5rem',
             background: `linear-gradient(135deg, ${card.color}15 0%, ${card.color}05 100%)`,
             border: `1px solid ${card.color}30`,
+            minWidth: 0, // Prevent overflow
+            overflow: 'hidden', // Prevent content from overflowing
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
-            <span style={{ fontSize: '2rem' }}>{card.icon}</span>
-            <div>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', marginBottom: '0.5rem' }}>
+            <span style={{ fontSize: '2rem', flexShrink: 0 }}>{card.icon}</span>
+            <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: '0.85rem', color: '#94a3b8', marginBottom: '0.25rem' }}>
                 {card.title}
               </div>
-              <div style={{ fontSize: '1.75rem', fontWeight: '700', color: card.color }}>
+              <div style={{ 
+                fontSize: '1.75rem', 
+                fontWeight: '700', 
+                color: card.color,
+                wordBreak: 'break-word',
+                overflowWrap: 'break-word',
+                lineHeight: '1.2'
+              }}>
                 {card.value}
               </div>
             </div>
