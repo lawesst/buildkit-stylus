@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createConfig, http } from 'wagmi'
 import { arbitrumSepolia } from 'wagmi/chains'
 import { injected, metaMask, walletConnect } from 'wagmi/connectors'
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 
 const walletConnectProjectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
 
@@ -58,21 +58,46 @@ export function Providers({ children }: { children: React.ReactNode }) {
   }))
 
   // Create config only on client side to avoid SSR issues
-  const config = useMemo(() => {
-    if (typeof window === 'undefined') {
-      return null
-    }
-    return createWagmiConfig()
-  }, [])
+  // Use state instead of useMemo to ensure it's created after mount
+  const [config, setConfig] = useState<any>(null)
 
   // Prevent hydration mismatch by only rendering after mount
   useEffect(() => {
     setMounted(true)
+    // Create config after mount (client-side only)
+    if (typeof window !== 'undefined') {
+      try {
+        const wagmiConfig = createWagmiConfig()
+        setConfig(wagmiConfig)
+      } catch (error) {
+        console.error('Error creating wagmi config:', error)
+      }
+    }
   }, [])
 
   // Return empty div during SSR to prevent hydration errors
-  if (!mounted || !config) {
+  if (!mounted) {
     return <div style={{ minHeight: '100vh', background: '#0a0a0a' }} />
+  }
+
+  // If config is still null after mount, there was an error
+  if (!config) {
+    return (
+      <div style={{ 
+        minHeight: '100vh', 
+        background: '#0a0a0a',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: '#fff',
+        padding: '2rem'
+      }}>
+        <div>
+          <h2>Error initializing wallet connection</h2>
+          <p>Please refresh the page or check the browser console for details.</p>
+        </div>
+      </div>
+    )
   }
 
   return (
