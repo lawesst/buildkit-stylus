@@ -63,16 +63,16 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   // Prevent hydration mismatch by only rendering after mount
   useEffect(() => {
-    setMounted(true)
     // Create config after mount (client-side only)
     if (typeof window !== 'undefined') {
       try {
         const wagmiConfig = createWagmiConfig()
         setConfig(wagmiConfig)
+        setMounted(true) // Only set mounted after config is created
       } catch (error) {
         console.error('Error creating wagmi config:', error)
-        // Even if config creation fails, we should still render children
-        // to show the error state in the app itself
+        // Set mounted even on error so we can show error state
+        setMounted(true)
       }
     }
   }, [])
