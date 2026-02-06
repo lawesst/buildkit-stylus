@@ -1,0 +1,9 @@
+node_modules
+packages/*/node_modules
+packages/*/.next
+packages/stylus-contracts/target
+packages/stylus-contracts/Cargo.lock
+packages/indexer/data
+packages/indexer/dist
+packages/cli/dist
+.git
