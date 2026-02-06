@@ -44,16 +44,16 @@ export default function Dashboard() {
     const checkConnection = async () => {
       try {
         const controller = new AbortController()
-        const timeoutId = setTimeout(() => controller.abort(), 2000) // 2 second timeout
+        const timeoutId = setTimeout(() => controller.abort(), 3000) // 3 second timeout
         
         const response = await fetch(`${INDEXER_API}/health`, {
           method: 'GET',
-          mode: 'cors', // Explicitly enable CORS
+          mode: 'cors',
           headers: {
             'Content-Type': 'application/json',
           },
           signal: controller.signal,
-          cache: 'no-store', // Prevent caching
+          cache: 'no-store',
         })
         
         clearTimeout(timeoutId)
@@ -61,7 +61,7 @@ export default function Dashboard() {
         if (response.ok) {
           try {
             const data = await response.json()
-            if (data && (data.success || data.status === 'healthy')) {
+            if (data && (data.success || data.status === 'healthy' || data.status === 'ok')) {
               setIndexerAvailable(true)
               return
             }
@@ -77,17 +77,17 @@ export default function Dashboard() {
       } catch (error: any) {
         // Network errors, timeouts, etc.
         // Only log non-abort errors to reduce console noise
-        if (error.name !== 'AbortError' && error.name !== 'TypeError') {
-          console.error('Indexer connection error:', error)
+        if (error.name !== 'AbortError') {
+          // Silently handle connection errors - will retry
+          setIndexerAvailable(false)
         }
-        setIndexerAvailable(false)
       }
     }
     
     // Initial check immediately
     checkConnection()
-    // Recheck every 1.5 seconds for faster detection
-    const interval = setInterval(checkConnection, 1500)
+    // Recheck every 2 seconds for faster detection
+    const interval = setInterval(checkConnection, 2000)
     return () => clearInterval(interval)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
