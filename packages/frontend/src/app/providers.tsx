@@ -71,33 +71,15 @@ export function Providers({ children }: { children: React.ReactNode }) {
         setConfig(wagmiConfig)
       } catch (error) {
         console.error('Error creating wagmi config:', error)
+        // Even if config creation fails, we should still render children
+        // to show the error state in the app itself
       }
     }
   }, [])
 
   // Return empty div during SSR to prevent hydration errors
-  if (!mounted) {
+  if (!mounted || !config) {
     return <div style={{ minHeight: '100vh', background: '#0a0a0a' }} />
-  }
-
-  // If config is still null after mount, there was an error
-  if (!config) {
-    return (
-      <div style={{ 
-        minHeight: '100vh', 
-        background: '#0a0a0a',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: '#fff',
-        padding: '2rem'
-      }}>
-        <div>
-          <h2>Error initializing wallet connection</h2>
-          <p>Please refresh the page or check the browser console for details.</p>
-        </div>
-      </div>
-    )
   }
 
   return (
