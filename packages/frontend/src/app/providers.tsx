@@ -66,11 +66,14 @@ export function Providers({ children }: { children: React.ReactNode }) {
     // Create config after mount (client-side only)
     if (typeof window !== 'undefined') {
       try {
+        console.log('[Providers] Creating wagmi config...')
         const wagmiConfig = createWagmiConfig()
+        console.log('[Providers] Config created successfully:', wagmiConfig)
         setConfig(wagmiConfig)
         setMounted(true) // Only set mounted after config is created
+        console.log('[Providers] Mounted and ready')
       } catch (error) {
-        console.error('Error creating wagmi config:', error)
+        console.error('[Providers] Error creating wagmi config:', error)
         // Set mounted even on error so we can show error state
         setMounted(true)
       }
