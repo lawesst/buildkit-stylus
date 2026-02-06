@@ -368,7 +368,7 @@ export function WalletConnect() {
             <p style={{ marginBottom: '0.5rem' }}>After installing MetaMask:</p>
             <ol style={{ textAlign: 'left', display: 'inline-block', margin: 0, paddingLeft: '1.5rem' }}>
               <li>Refresh this page</li>
-              <li>Click "Connect MetaMask" button</li>
+              <li>Click &quot;Connect MetaMask&quot; button</li>
               <li>Approve the connection in MetaMask</li>
               <li>Switch to Arbitrum Sepolia network</li>
             </ol>

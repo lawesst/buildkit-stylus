@@ -85,7 +85,7 @@ export function ContractMetadata({}: ContractMetadataProps) {
               lineHeight: '1.6'
             }}>
               <strong style={{ color: '#60a5fa' }}>STYLUS NOTE:</strong> This contract is written in Rust
-              and compiled to WASM, but from the indexer's perspective, it works exactly like a Solidity
+              and compiled to WASM, but from the indexer&apos;s perspective, it works exactly like a Solidity
               contract. Events are standard EVM events, ABIs are standard JSON ABIs.
             </div>
           </div>

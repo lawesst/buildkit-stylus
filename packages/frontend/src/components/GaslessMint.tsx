@@ -154,7 +154,7 @@ export function GaslessMint() {
         </div>
         <p style={{ margin: 0, fontSize: '0.9rem', color: '#94a3b8', marginBottom: '0.5rem' }}>
           This is a <strong style={{ color: '#fbbf24' }}>SIMULATION</strong> of ERC-4337 Account Abstraction.
-          A paymaster contract would sponsor the gas fees, so you wouldn't need ETH.
+          A paymaster contract would sponsor the gas fees, so you wouldn&apos;t need ETH.
         </p>
         <div style={{ 
           fontSize: '0.85rem', 
@@ -164,7 +164,7 @@ export function GaslessMint() {
           borderRadius: '4px',
           border: '1px solid #3a2a00'
         }}>
-          This demo does not execute real transactions. Use the regular "Mint NFT" button for actual minting.
+          This demo does not execute real transactions. Use the regular &quot;Mint NFT&quot; button for actual minting.
         </div>
       </div>
 
@@ -325,7 +325,7 @@ export function GaslessMint() {
                   on-chain transactions.
                 </div>
                 <div style={{ color: '#60a5fa', marginTop: '0.5rem', fontSize: '0.8rem' }}>
-                  To actually mint an NFT, use the regular "Mint NFT" button on the home page.
+                  To actually mint an NFT, use the regular &quot;Mint NFT&quot; button on the home page.
                 </div>
               </div>
               {userOpHash && (
@@ -343,7 +343,7 @@ export function GaslessMint() {
                     {txHash}
                   </div>
                   <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.25rem' }}>
-                    (This hash will not appear on Arbiscan - it's a demo)
+                    (This hash will not appear on Arbiscan - it&apos;s a demo)
                   </div>
                 </div>
               )}
@@ -386,7 +386,7 @@ export function GaslessMint() {
                 <strong>This is a simulation.</strong> A full ERC-4337 implementation requires:
               </p>
               <ul style={{ marginLeft: '1.5rem', marginBottom: '0.75rem' }}>
-                <li>Smart Contract Wallet (SCW) - User's account abstraction wallet</li>
+                <li>Smart Contract Wallet (SCW) - User&apos;s account abstraction wallet</li>
                 <li>Paymaster Contract - Sponsors gas fees for transactions</li>
                 <li>Bundler Service - Aggregates and submits UserOperations</li>
                 <li>EntryPoint Contract - Validates and executes UserOperations</li>

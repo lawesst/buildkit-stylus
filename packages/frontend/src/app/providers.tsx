@@ -12,7 +12,7 @@ const walletConnectProjectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
 // Build connectors array - prioritize MetaMask
 // We use metaMask() first as it's specifically designed for MetaMask
 // Then injected() as fallback for other wallets
-const connectors = [
+const connectors: any[] = [
   metaMask(), // Primary: Specifically for MetaMask
   injected(), // Fallback: Detects any injected wallet provider
 ]
@@ -22,7 +22,7 @@ if (walletConnectProjectId && walletConnectProjectId.trim() !== '') {
   connectors.push(
     walletConnect({
       projectId: walletConnectProjectId,
-    })
+    }) as any
   )
 }
 

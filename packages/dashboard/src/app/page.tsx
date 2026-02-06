@@ -89,7 +89,8 @@ export default function Dashboard() {
     // Recheck every 1.5 seconds for faster detection
     const interval = setInterval(checkConnection, 1500)
     return () => clearInterval(interval)
-  }, [INDEXER_API])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <div className="container">

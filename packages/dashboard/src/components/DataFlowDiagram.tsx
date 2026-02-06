@@ -93,7 +93,7 @@ export function DataFlowDiagram() {
               overflowX: 'auto'
             }}>
               <div style={{ color: 'var(--arb-blue-light)', marginBottom: '0.25rem' }}>
-                <span style={{ color: 'var(--text-tertiary)' }}>// Rust (Stylus)</span>
+                <span style={{ color: 'var(--text-tertiary)' }}>{'// Rust (Stylus)'}</span>
               </div>
               <div style={{ color: 'var(--text-primary)' }}>
                 <span style={{ color: 'var(--text-tertiary)' }}>self</span>.<span style={{ color: '#60a5fa' }}>vm</span>().<span style={{ color: '#60a5fa' }}>log</span>(<span style={{ color: '#fbbf24' }}>Transfer</span> {'{'}
@@ -318,7 +318,7 @@ export function DataFlowDiagram() {
               lineHeight: '1.6',
               marginBottom: '1rem'
             }}>
-              Fetches indexed events from the indexer's REST API and displays analytics.
+              Fetches indexed events from the indexer&apos;s REST API and displays analytics.
             </p>
             
             <div style={{
@@ -400,7 +400,7 @@ export function DataFlowDiagram() {
             </strong>
             <p style={{ margin: 0, color: 'var(--text-secondary)' }}>
               Stylus contracts emit <strong style={{ color: 'var(--text-primary)' }}>standard EVM events</strong>.
-              From the indexer's perspective, there's no difference between a Stylus event and a Solidity event.
+              From the indexer&apos;s perspective, there&apos;s no difference between a Stylus event and a Solidity event.
               Both use the same log format, same ABI structure, and same RPC methods. This means you can use
               all existing Ethereum tooling without any modifications.
             </p>

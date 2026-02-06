@@ -1,15 +1,44 @@
 {
   "pages": {
-    "/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/page.js"
+    "/_not-found/page": [
+      "static/chunks/webpack-54dff5b5a3b55762.js",
+      "static/chunks/5b8f0dd8-ba19c28825a3520a.js",
+      "static/chunks/2749-22f436be900e91f6.js",
+      "static/chunks/main-app-48b9751f03140c88.js",
+      "static/chunks/app/_not-found/page-64ef6b67a7494fa6.js"
     ],
     "/layout": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/layout.css",
-      "static/chunks/app/layout.js"
+      "static/chunks/webpack-54dff5b5a3b55762.js",
+      "static/chunks/5b8f0dd8-ba19c28825a3520a.js",
+      "static/chunks/2749-22f436be900e91f6.js",
+      "static/chunks/main-app-48b9751f03140c88.js",
+      "static/css/97208f21ce7f3eea.css",
+      "static/chunks/2507-91e7f12e35272eda.js",
+      "static/chunks/615-c81126090be6b3ec.js",
+      "static/chunks/2106-ce590d44c367b22a.js",
+      "static/chunks/app/layout-b8acd3f3485a480d.js"
+    ],
+    "/gasless/page": [
+      "static/chunks/webpack-54dff5b5a3b55762.js",
+      "static/chunks/5b8f0dd8-ba19c28825a3520a.js",
+      "static/chunks/2749-22f436be900e91f6.js",
+      "static/chunks/main-app-48b9751f03140c88.js",
+      "static/chunks/2507-91e7f12e35272eda.js",
+      "static/chunks/2806-df96e35df1b1a923.js",
+      "static/chunks/8275-5b1f496714614156.js",
+      "static/chunks/app/gasless/page-65f5afe40966099d.js"
+    ],
+    "/page": [
+      "static/chunks/webpack-54dff5b5a3b55762.js",
+      "static/chunks/5b8f0dd8-ba19c28825a3520a.js",
+      "static/chunks/2749-22f436be900e91f6.js",
+      "static/chunks/main-app-48b9751f03140c88.js",
+      "static/chunks/2507-91e7f12e35272eda.js",
+      "static/chunks/2806-df96e35df1b1a923.js",
+      "static/chunks/615-c81126090be6b3ec.js",
+      "static/chunks/1792-f60c36cb6ad15a50.js",
+      "static/chunks/8275-5b1f496714614156.js",
+      "static/chunks/app/page-4ef8249d1f22111d.js"
     ]
   }
 }

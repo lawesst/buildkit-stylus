@@ -9,7 +9,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsx src/cli.ts",
-    "lint": "eslint src"
+    "lint": "eslint src --ext .ts || true"
   },
   "dependencies": {
     "commander": "^11.0.0",

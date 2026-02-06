@@ -95,7 +95,7 @@ export class EventIndexer {
    */
   private setupEventListeners() {
     for (const [name, contract] of this.contracts.entries()) {
-      const contractConfig = this.config.contracts[name]
+      const contractConfig = this.config.contracts[name as keyof typeof this.config.contracts]
 
       // Listen for Transfer events (NFT contract)
       if (contractConfig.abi.some((e: any) => e.name === 'Transfer')) {
@@ -150,7 +150,7 @@ export class EventIndexer {
 
     // Query events for each contract
     for (const [name, contract] of this.contracts.entries()) {
-      const contractConfig = this.config.contracts[name]
+      const contractConfig = this.config.contracts[name as keyof typeof this.config.contracts]
 
       // Query Transfer events
       if (contractConfig.abi.some((e: any) => e.name === 'Transfer')) {
@@ -208,7 +208,7 @@ export class EventIndexer {
         parsedEvent = event as ethers.LogDescription
         const eventLog = event as any
         logData = {
-          address: eventLog.address || this.config.contracts[contractName].address,
+          address: eventLog.address || this.config.contracts[contractName as keyof typeof this.config.contracts].address,
           blockNumber: eventLog.blockNumber || 0,
           blockHash: eventLog.blockHash || '',
           transactionHash: eventLog.transactionHash || eventLog.hash || '',
