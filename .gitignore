@@ -2,28 +2,47 @@
 node_modules/
 .pnp
 .pnp.js
+.yarn/
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
 
 # Build outputs
 dist/
 build/
+.next/
+out/
 *.wasm
 target/
+*.o
+*.a
+*.so
+*.dylib
+*.dll
 
 # Stylus
 .stylus/
-*.so
 packages/stylus-contracts/deployments/*.json
 !packages/stylus-contracts/deployments/*.example
+packages/stylus-contracts/abis/*.json
+!packages/stylus-contracts/abis/*.example
 
 # Environment
 .env
 .env.local
 .env*.local
+.env.development.local
+.env.test.local
+.env.production.local
 
 # Logs
 *.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 pnpm-debug.log*
+lerna-debug.log*
 
 # IDE
 .vscode/
@@ -31,18 +50,49 @@ pnpm-debug.log*
 *.swp
 *.swo
 *~
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
 
 # OS
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+Desktop.ini
 
 # Testing
 coverage/
 .nyc_output/
+*.lcov
+.jest/
+
+# TypeScript
+*.tsbuildinfo
+.tsbuildinfo
+
+# Next.js
+.next/
+out/
+.vercel
+
+# Turbo
+.turbo/
+.turbo
 
 # Misc
 .cache/
-.turbo/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+*.pid
+*.seed
+*.pid.lock
 
 # Indexer data
 packages/indexer/data/
@@ -51,3 +101,26 @@ packages/indexer/*.json
 !packages/indexer/package.json
 !packages/indexer/tsconfig.json
 !packages/indexer/README.md
+
+# Rust/Cargo
+target/
+**/*.rs.bk
+Cargo.lock
+# Keep Cargo.lock for reproducible builds (uncomment if needed)
+# !Cargo.lock
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*~
+
+# Package manager locks (keep pnpm-lock.yaml, ignore others)
+package-lock.json
+yarn.lock
+
+# Local development
+.local/
+local/
+*.local
