@@ -1,415 +1,298 @@
 'use client'
 
 /**
- * Gasless Mint Component - ERC-4337 Account Abstraction Demo
+ * Gasless Message Posting Component - Archetype 2
  * 
- * This is a SIMULATION/DEMO. A full ERC-4337 implementation would require
- * UserOperation construction, paymaster integration, and bundler service.
+ * Calls the real Stylus gasless contract's post_message function.
+ * This demonstrates real Stylus + ERC-4337 Account Abstraction compatibility.
+ * 
+ * NOTE: While the contract is designed for AA/paymaster sponsorship,
+ * this frontend currently calls it with a standard transaction.
+ * In a full AA implementation, you would use a paymaster to sponsor gas.
  */
 
-import { useState } from 'react'
-import { useAccount } from 'wagmi'
-import { NFT_CONTRACT_ADDRESS } from '@/lib/contracts'
+import { useState, useEffect } from 'react'
+import { useAccount, useWriteContract, useWaitForTransactionReceipt, useFeeData } from 'wagmi'
+import { GASLESS_CONTRACT_ADDRESS, GASLESS_ABI } from '@/lib/contracts'
 
-type FlowState = 'idle' | 'building' | 'signing' | 'submitting' | 'success' | 'error'
+type FlowState = 'idle' | 'posting' | 'confirming' | 'success' | 'error'
 
 export function GaslessMint() {
   const { address, isConnected } = useAccount()
-  const [recipient, setRecipient] = useState('')
+  const [message, setMessage] = useState('')
   const [flowState, setFlowState] = useState<FlowState>('idle')
-  const [userOpHash, setUserOpHash] = useState<string | null>(null)
-  const [txHash, setTxHash] = useState<string | null>(null)
 
-  /**
-   * Simulate the gasless mint flow
-   * 
-   * In a real ERC-4337 implementation, this would:
-   * 1. Build UserOperation with:
-   *    - sender: User's smart contract wallet address
-   *    - nonce: Current nonce from the wallet
-   *    - callData: Encoded mint() function call
-   *    - callGasLimit: Estimated gas for the call
-   *    - verificationGasLimit: Gas for signature verification
-   *    - preVerificationGas: Gas for UserOperation overhead
-   *    - maxFeePerGas: Maximum fee user is willing to pay
-   *    - maxPriorityFeePerGas: Priority fee
-   *    - paymasterAndData: Paymaster address + signature (if sponsored)
-   *    - signature: User's signature over the UserOperation
-   * 
-   * 2. Send UserOperation to bundler via:
-   *    - eth_sendUserOperation RPC method
-   *    - Or use a library like @account-abstraction/sdk
-   * 
-   * 3. Bundler aggregates and submits to EntryPoint
-   * 
-   * 4. EntryPoint validates and executes:
-   *    - Validates paymaster signature
-   *    - Calls paymaster.validatePaymasterUserOp()
-   *    - Executes the contract call (mint function)
-   *    - Pays gas from paymaster's balance
-   * 
-   * For this demo, we simulate the steps with delays.
-   */
-  const handleGaslessMint = async () => {
+  // Get current fee data for gas pricing
+  const { data: feeData } = useFeeData({
+    chainId: 421614, // Arbitrum Sepolia
+  })
+
+  // Write contract (post_message function)
+  const { data: hash, writeContract, isPending, error } = useWriteContract({
+    mutation: {
+      onError: (error) => {
+        console.error('Post message error:', error)
+        setFlowState('error')
+      },
+    },
+  })
+
+  // Wait for transaction
+  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
+    hash,
+  })
+
+  // Update flow state based on transaction status
+  useEffect(() => {
+    if (isPending) {
+      setFlowState('posting')
+    } else if (isConfirming) {
+      setFlowState('confirming')
+    } else if (isSuccess) {
+      setFlowState('success')
+    } else if (error) {
+      setFlowState('error')
+    } else if (!hash && !isPending && !isConfirming) {
+      setFlowState('idle')
+    }
+  }, [isPending, isConfirming, isSuccess, error, hash])
+
+  const handlePostMessage = async () => {
     if (!isConnected || !address) {
       alert('Please connect your wallet first')
       return
     }
 
-    const mintTo = recipient || address
+    if (!message.trim()) {
+      alert('Please enter a message')
+      return
+    }
+
+    if (GASLESS_CONTRACT_ADDRESS === '0x0000000000000000000000000000000000000000') {
+      alert('Gasless contract not deployed yet. Please deploy it first.')
+      return
+    }
 
     try {
-      // Step 1: Build UserOperation
-      setFlowState('building')
-      setUserOpHash(null)
-      setTxHash(null)
+      setFlowState('posting')
 
-      // Simulate UserOperation construction
-      await new Promise(resolve => setTimeout(resolve, 800))
+      // Calculate gas prices with buffer
+      const baseMaxFeePerGas = feeData?.maxFeePerGas || BigInt(20000000)
+      const baseMaxPriorityFeePerGas = feeData?.maxPriorityFeePerGas || BigInt(1000000)
       
-      // In real implementation:
-      // const userOp = await buildUserOperation({
-      //   sender: smartWalletAddress,
-      //   callData: encodeFunctionData({
-      //     abi: NFT_ABI,
-      //     functionName: 'mint',
-      //     args: [mintTo],
-      //   }),
-      //   paymasterAndData: paymasterAddress + paymasterSignature,
-      // })
+      const maxFeePerGas = (baseMaxFeePerGas * BigInt(120)) / BigInt(100)
+      const maxPriorityFeePerGas = (baseMaxPriorityFeePerGas * BigInt(110)) / BigInt(100)
       
-      const simulatedUserOpHash = `0x${Array.from({ length: 64 }, () => 
-        Math.floor(Math.random() * 16).toString(16)
-      ).join('')}`
+      // Gas limit for post_message (string operations can be gas-intensive)
+      const gasLimit = BigInt(200000) // 200k gas limit
 
-      // Step 2: Sign UserOperation (simulated)
-      setFlowState('signing')
-      await new Promise(resolve => setTimeout(resolve, 600))
-
-      // In real implementation:
-      // const signature = await signUserOperation(userOp, privateKey)
-      // userOp.signature = signature
-
-      // Step 3: Submit to bundler
-      setFlowState('submitting')
-      setUserOpHash(simulatedUserOpHash)
-
-      // Simulate bundler processing
-      await new Promise(resolve => setTimeout(resolve, 1500))
-
-      // In real implementation:
-      // const userOpHash = await bundler.sendUserOperation(userOp)
-      // const receipt = await bundler.waitForUserOperation(userOpHash)
-
-      // Simulate transaction hash
-      const simulatedTxHash = `0x${Array.from({ length: 64 }, () => 
-        Math.floor(Math.random() * 16).toString(16)
-      ).join('')}`
-
-      setTxHash(simulatedTxHash)
-      setFlowState('success')
-    } catch (error) {
-      console.error('Gasless mint error:', error)
+      writeContract({
+        address: GASLESS_CONTRACT_ADDRESS as `0x${string}`,
+        abi: GASLESS_ABI,
+        functionName: 'post_message',
+        args: [message.trim()],
+        maxFeePerGas,
+        maxPriorityFeePerGas,
+        gas: gasLimit,
+      })
+    } catch (err) {
+      console.error('Post message error:', err)
       setFlowState('error')
     }
   }
 
   const reset = () => {
     setFlowState('idle')
-    setUserOpHash(null)
-    setTxHash(null)
+    setMessage('')
   }
 
   return (
     <div className="card">
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-        <h2 style={{ margin: 0 }}>Gasless Mint</h2>
-        <span style={{ 
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          color: 'white',
-          padding: '0.25rem 0.75rem',
-          borderRadius: '12px',
-          fontSize: '0.75rem',
-          fontWeight: '600'
+      <h2>Post Gasless Message</h2>
+      <p style={{ fontSize: '0.9rem', color: '#94a3b8', marginBottom: '1.5rem' }}>
+        Post a message to the Stylus gasless contract. This contract is designed for
+        ERC-4337 Account Abstraction, where a paymaster would sponsor the gas fees.
+      </p>
+
+      {GASLESS_CONTRACT_ADDRESS === '0x0000000000000000000000000000000000000000' && (
+        <div style={{
+          padding: '1rem',
+          background: 'rgba(239, 68, 68, 0.15)',
+          border: '1px solid rgba(239, 68, 68, 0.3)',
+          borderRadius: '8px',
+          color: '#EF4444',
+          marginBottom: '1rem'
         }}>
-          ERC-4337 Demo
-        </span>
+          <strong>Contract Not Deployed</strong>
+          <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.85rem' }}>
+            The gasless contract has not been deployed yet. Deploy it using:
+            <code style={{ display: 'block', marginTop: '0.5rem', padding: '0.5rem', background: 'rgba(0,0,0,0.2)', borderRadius: '4px' }}>
+              cd packages/stylus-contracts && bash scripts/deploy.sh gasless sepolia
+            </code>
+          </p>
+        </div>
+      )}
+
+      <div style={{ marginBottom: '1.5rem' }}>
+        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>
+          Message
+        </label>
+        <textarea
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder="Enter your message (max 1000 characters)"
+          maxLength={1000}
+          rows={4}
+          style={{
+            width: '100%',
+            padding: '0.75rem',
+            background: 'var(--bg-secondary)',
+            border: '1px solid var(--border-secondary)',
+            borderRadius: 'var(--radius-md)',
+            color: 'var(--text-primary)',
+            fontSize: '0.9rem',
+            fontFamily: 'inherit',
+            resize: 'vertical',
+          }}
+        />
+        <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '0.25rem' }}>
+          {message.length} / 1000 characters
+        </div>
       </div>
 
-      <div style={{ 
-        background: '#0f1419',
-        border: '1px solid #1e3a5f',
-        borderRadius: '6px',
-        padding: '1rem',
-        marginBottom: '1.5rem'
-      }}>
-        <div style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: '0.5rem',
-          marginBottom: '0.5rem',
-          color: '#60a5fa'
+      {flowState === 'success' && hash && (
+        <div style={{
+          padding: '1rem',
+          background: 'rgba(16, 185, 129, 0.15)',
+          border: '1px solid rgba(16, 185, 129, 0.3)',
+          borderRadius: '8px',
+          color: '#10b981',
+          marginBottom: '1rem'
         }}>
-          <strong>Gas Sponsored on Arbitrum (Demo)</strong>
-        </div>
-        <p style={{ margin: 0, fontSize: '0.9rem', color: '#94a3b8', marginBottom: '0.5rem' }}>
-          This is a <strong style={{ color: '#fbbf24' }}>SIMULATION</strong> of ERC-4337 Account Abstraction.
-          A paymaster contract would sponsor the gas fees, so you wouldn&apos;t need ETH.
-        </p>
-        <div style={{ 
-          fontSize: '0.85rem', 
-          color: '#fbbf24',
-          padding: '0.5rem',
-          background: '#1a1a1a',
-          borderRadius: '4px',
-          border: '1px solid #3a2a00'
-        }}>
-          This demo does not execute real transactions. Use the regular &quot;Mint NFT&quot; button for actual minting.
-        </div>
-      </div>
-
-      {!isConnected ? (
-        <div className="status info">
-          Please connect your wallet first to use gasless transactions
-        </div>
-      ) : (
-        <>
-          <div style={{ marginBottom: '1rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
-              Recipient Address
-            </label>
-            <input
-              type="text"
-              placeholder={`${address} (your address)`}
-              value={recipient}
-              onChange={(e) => setRecipient(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                background: '#0a0a0a',
-                border: '1px solid #2a2a2a',
-                borderRadius: '6px',
-                color: '#e0e0e0',
-                fontSize: '0.9rem'
-              }}
-            />
-          </div>
-
+          <strong>Message Posted Successfully!</strong>
+          <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.85rem' }}>
+            Transaction: <a
+              href={`https://sepolia.arbiscan.io/tx/${hash}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: '#10b981', textDecoration: 'underline' }}
+            >
+              {hash.slice(0, 10)}...{hash.slice(-8)}
+            </a>
+          </p>
           <button
-            onClick={flowState === 'success' ? reset : handleGaslessMint}
-            disabled={
-              flowState === 'building' || 
-              flowState === 'signing' || 
-              flowState === 'submitting' ||
-              NFT_CONTRACT_ADDRESS === '0x0000000000000000000000000000000000000000'
-            }
+            onClick={reset}
             style={{
-              width: '100%',
-              padding: '0.75rem 1.5rem',
-              background: flowState === 'success' 
-                ? '#22c55e' 
-                : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              border: 'none',
+              marginTop: '0.75rem',
+              padding: '0.5rem 1rem',
+              background: 'transparent',
+              border: '1px solid #10b981',
               borderRadius: '6px',
-              color: 'white',
-              fontSize: '1rem',
-              fontWeight: '600',
-              cursor: flowState === 'idle' || flowState === 'success' ? 'pointer' : 'not-allowed',
-              opacity: (flowState === 'building' || flowState === 'signing' || flowState === 'submitting') ? 0.7 : 1,
-              transition: 'all 0.2s'
+              color: '#10b981',
+              cursor: 'pointer',
+              fontSize: '0.85rem',
             }}
           >
-            {flowState === 'idle' && 'Mint NFT (Gasless)'}
-            {flowState === 'building' && 'Building UserOperation...'}
-            {flowState === 'signing' && 'Signing UserOperation...'}
-            {flowState === 'submitting' && 'Submitting to Bundler...'}
-            {flowState === 'success' && 'Success! Mint Again'}
-            {flowState === 'error' && 'Error - Try Again'}
+            Post Another Message
           </button>
-
-          {/* Flow Status */}
-          {flowState !== 'idle' && flowState !== 'error' && (
-            <div style={{ marginTop: '1rem' }}>
-              <div style={{ 
-                fontSize: '0.85rem', 
-                color: '#94a3b8',
-                marginBottom: '0.5rem'
-              }}>
-                Flow Status:
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                <div style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '0.5rem',
-                  color: flowState === 'building' ? '#60a5fa' : '#22c55e'
-                }}>
-                  <span style={{ 
-                    width: '8px', 
-                    height: '8px', 
-                    borderRadius: '50%', 
-                    background: flowState === 'building' ? '#60a5fa' : '#22c55e',
-                    display: 'inline-block'
-                  }}></span>
-                  <span>Build UserOperation</span>
-                </div>
-                <div style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '0.5rem',
-                  color: flowState === 'signing' ? '#60a5fa' : flowState === 'building' ? '#64748b' : '#22c55e'
-                }}>
-                  <span style={{ 
-                    width: '8px', 
-                    height: '8px', 
-                    borderRadius: '50%', 
-                    background: flowState === 'signing' ? '#60a5fa' : flowState === 'building' ? '#64748b' : '#22c55e',
-                    display: 'inline-block'
-                  }}></span>
-                  <span>Sign UserOperation</span>
-                </div>
-                <div style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '0.5rem',
-                  color: flowState === 'submitting' ? '#60a5fa' : (flowState === 'building' || flowState === 'signing') ? '#64748b' : '#22c55e'
-                }}>
-                  <span style={{ 
-                    width: '8px', 
-                    height: '8px', 
-                    borderRadius: '50%', 
-                    background: flowState === 'submitting' ? '#60a5fa' : (flowState === 'building' || flowState === 'signing') ? '#64748b' : '#22c55e',
-                    display: 'inline-block'
-                  }}></span>
-                  <span>Submit to Bundler</span>
-                </div>
-                <div style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '0.5rem',
-                  color: flowState === 'success' ? '#22c55e' : '#64748b'
-                }}>
-                  <span style={{ 
-                    width: '8px', 
-                    height: '8px', 
-                    borderRadius: '50%', 
-                    background: flowState === 'success' ? '#22c55e' : '#64748b',
-                    display: 'inline-block'
-                  }}></span>
-                  <span>Execute on Arbitrum</span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Success State */}
-          {flowState === 'success' && (
-            <div className="status success" style={{ marginTop: '1rem' }}>
-              <div style={{ marginBottom: '0.5rem' }}>
-                <strong>Gasless Transaction Simulated!</strong>
-              </div>
-              <div style={{ 
-                fontSize: '0.85rem', 
-                background: '#1a1a1a',
-                padding: '0.75rem',
-                borderRadius: '6px',
-                marginBottom: '0.5rem',
-                border: '1px solid #2a2a2a'
-              }}>
-                <div style={{ color: '#fbbf24', marginBottom: '0.5rem', fontWeight: '600' }}>
-                  This is a SIMULATION
-                </div>
-                <div style={{ color: '#94a3b8', lineHeight: '1.6' }}>
-                  This demo simulates the gasless transaction flow. The transaction hashes below
-                  are randomly generated for demonstration purposes and do not represent real
-                  on-chain transactions.
-                </div>
-                <div style={{ color: '#60a5fa', marginTop: '0.5rem', fontSize: '0.8rem' }}>
-                  To actually mint an NFT, use the regular &quot;Mint NFT&quot; button on the home page.
-                </div>
-              </div>
-              {userOpHash && (
-                <div style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>
-                  <div style={{ color: '#94a3b8' }}>Simulated UserOperation Hash:</div>
-                  <div className="address" style={{ wordBreak: 'break-all', opacity: 0.7 }}>
-                    {userOpHash}
-                  </div>
-                </div>
-              )}
-              {txHash && (
-                <div style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>
-                  <div style={{ color: '#94a3b8' }}>Simulated Transaction Hash:</div>
-                  <div className="address" style={{ wordBreak: 'break-all', opacity: 0.7 }}>
-                    {txHash}
-                  </div>
-                  <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.25rem' }}>
-                    (This hash will not appear on Arbiscan - it&apos;s a demo)
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Error State */}
-          {flowState === 'error' && (
-            <div className="status error" style={{ marginTop: '1rem' }}>
-              <div>
-                <strong>Transaction Failed</strong>
-              </div>
-              <div style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>
-                In a real implementation, this would show the actual error from the bundler
-                or EntryPoint contract. Common errors include insufficient paymaster balance
-                or invalid UserOperation signature.
-              </div>
-            </div>
-          )}
-
-          {/* Technical Details */}
-          <details style={{ marginTop: '1.5rem', fontSize: '0.85rem' }}>
-            <summary style={{ 
-              cursor: 'pointer', 
-              color: '#94a3b8',
-              marginBottom: '0.5rem'
-            }}>
-              Technical Details (ERC-4337)
-            </summary>
-            <div style={{ 
-              background: '#0a0a0a',
-              padding: '1rem',
-              borderRadius: '6px',
-              marginTop: '0.5rem',
-              fontSize: '0.8rem',
-              color: '#94a3b8',
-              lineHeight: '1.6'
-            }}>
-              <p style={{ marginBottom: '0.75rem' }}>
-                <strong>This is a simulation.</strong> A full ERC-4337 implementation requires:
-              </p>
-              <ul style={{ marginLeft: '1.5rem', marginBottom: '0.75rem' }}>
-                <li>Smart Contract Wallet (SCW) - User&apos;s account abstraction wallet</li>
-                <li>Paymaster Contract - Sponsors gas fees for transactions</li>
-                <li>Bundler Service - Aggregates and submits UserOperations</li>
-                <li>EntryPoint Contract - Validates and executes UserOperations</li>
-              </ul>
-              <p style={{ marginBottom: '0.75rem' }}>
-                <strong>ERC-4337 Compatibility:</strong> Any contract that uses standard EVM calls
-                is compatible with ERC-4337. The paymaster can sponsor gas for any contract interaction.
-              </p>
-              <p>
-                <strong>Real Implementation:</strong> Use libraries like{' '}
-                <code style={{ background: '#1a1a1a', padding: '0.2rem 0.4rem', borderRadius: '3px' }}>
-                  @account-abstraction/sdk
-                </code>
-                {' '}or{' '}
-                <code style={{ background: '#1a1a1a', padding: '0.2rem 0.4rem', borderRadius: '3px' }}>
-                  @alchemy/aa-sdk
-                </code>
-                {' '}to build and submit UserOperations.
-              </p>
-            </div>
-          </details>
-        </>
+        </div>
       )}
+
+      {flowState === 'error' && (
+        <div style={{
+          padding: '1rem',
+          background: 'rgba(239, 68, 68, 0.15)',
+          border: '1px solid rgba(239, 68, 68, 0.3)',
+          borderRadius: '8px',
+          color: '#EF4444',
+          marginBottom: '1rem'
+        }}>
+          <strong>Error Posting Message</strong>
+          <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.85rem' }}>
+            {error?.message || 'An error occurred while posting the message'}
+          </p>
+          <button
+            onClick={reset}
+            style={{
+              marginTop: '0.75rem',
+              padding: '0.5rem 1rem',
+              background: 'transparent',
+              border: '1px solid #EF4444',
+              borderRadius: '6px',
+              color: '#EF4444',
+              cursor: 'pointer',
+              fontSize: '0.85rem',
+            }}
+          >
+            Try Again
+          </button>
+        </div>
+      )}
+
+      <button
+        onClick={handlePostMessage}
+        disabled={!isConnected || flowState === 'posting' || flowState === 'confirming' || !message.trim()}
+        style={{
+          width: '100%',
+          padding: '0.875rem 1.5rem',
+          background: flowState === 'posting' || flowState === 'confirming'
+            ? 'var(--bg-tertiary)'
+            : 'var(--arb-gradient)',
+          color: 'white',
+          border: 'none',
+          borderRadius: 'var(--radius-md)',
+          fontSize: '1rem',
+          fontWeight: '600',
+          cursor: flowState === 'posting' || flowState === 'confirming' || !message.trim()
+            ? 'not-allowed'
+            : 'pointer',
+          transition: 'all var(--transition-base)',
+          opacity: flowState === 'posting' || flowState === 'confirming' || !message.trim() ? 0.6 : 1,
+        }}
+      >
+        {flowState === 'posting' && 'Posting Message...'}
+        {flowState === 'confirming' && 'Confirming Transaction...'}
+        {flowState === 'idle' && 'Post Message'}
+        {flowState === 'success' && 'Message Posted'}
+        {flowState === 'error' && 'Post Message'}
+      </button>
+
+      {!isConnected && (
+        <p style={{ marginTop: '1rem', fontSize: '0.85rem', color: '#94a3b8', textAlign: 'center' }}>
+          Connect your wallet to post a message
+        </p>
+      )}
+
+      <div style={{
+        marginTop: '2rem',
+        padding: '1.5rem',
+        background: 'var(--bg-secondary)',
+        border: '1px solid var(--border-secondary)',
+        borderRadius: 'var(--radius-md)',
+      }}>
+        <h3 style={{ marginTop: 0, marginBottom: '0.75rem', fontSize: '1rem' }}>
+          How It Works
+        </h3>
+        <div style={{ fontSize: '0.85rem', lineHeight: '1.8', color: '#94a3b8' }}>
+          <p style={{ marginBottom: '0.75rem' }}>
+            <strong style={{ color: 'var(--text-primary)' }}>1. Contract Call:</strong> Your message
+            is sent to the Stylus gasless contract's <code>post_message()</code> function.
+          </p>
+          <p style={{ marginBottom: '0.75rem' }}>
+            <strong style={{ color: 'var(--text-primary)' }}>2. Event Emission:</strong> The contract
+            emits a <code>MessagePosted</code> event with your address and message.
+          </p>
+          <p style={{ marginBottom: '0.75rem' }}>
+            <strong style={{ color: 'var(--text-primary)' }}>3. Indexing:</strong> The indexer
+            picks up the event and stores it for analytics.
+          </p>
+          <p style={{ margin: 0 }}>
+            <strong style={{ color: 'var(--text-primary)' }}>4. ERC-4337 Ready:</strong> This contract
+            is designed to work with Account Abstraction, where a paymaster would sponsor gas fees,
+            allowing users to interact without holding ETH.
+          </p>
+        </div>
+      </div>
     </div>
   )
 }

@@ -7,3 +7,4 @@ packages/indexer/data
 packages/indexer/dist
 packages/cli/dist
 .git
+.vercel

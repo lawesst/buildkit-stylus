@@ -82,10 +82,17 @@ echo -e "${GREEN}✓${NC} ABIs generated"
 echo ""
 echo -e "${YELLOW}🚀 Deploying to $NETWORK...${NC}"
 
-if [ "$CONTRACT" = "all" ]; then
-    cargo stylus deploy
+# Set RPC endpoint based on network
+if [ "$NETWORK" = "sepolia" ]; then
+    ENDPOINT="https://sepolia-rollup.arbitrum.io/rpc"
 else
-    cargo stylus deploy --contract "$CONTRACT"
+    ENDPOINT="https://sepolia-rollup.arbitrum.io/rpc"  # Default to sepolia
+fi
+
+if [ "$CONTRACT" = "all" ]; then
+    cargo stylus deploy --endpoint "$ENDPOINT" --private-key "$STYLUS_PRIVATE_KEY"
+else
+    cargo stylus deploy --contract "$CONTRACT" --endpoint "$ENDPOINT" --private-key "$STYLUS_PRIVATE_KEY"
 fi
 
 if [ $? -ne 0 ]; then

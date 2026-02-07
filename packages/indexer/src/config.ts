@@ -59,20 +59,22 @@ export const config = {
         },
       ],
     },
-    // Example: MessagePosted event (if you have a messaging contract)
-    // message: {
-    //   address: process.env.MESSAGE_CONTRACT_ADDRESS || '0x...',
-    //   abi: [
-    //     {
-    //       name: 'MessagePosted',
-    //       type: 'event',
-    //       inputs: [
-    //         { indexed: true, name: 'sender', type: 'address' },
-    //         { indexed: false, name: 'message', type: 'string' },
-    //         { indexed: false, name: 'timestamp', type: 'uint256' },
-    //       ],
-    //     },
-    //   ],
-    // },
+    // Gasless contract (Archetype 2)
+    gasless: {
+      address: process.env.GASLESS_CONTRACT_ADDRESS || 
+               deployments.contracts?.gasless?.address || 
+               '0x0000000000000000000000000000000000000000',
+      abi: [
+        // MessagePosted event - from Stylus gasless contract
+        {
+          name: 'MessagePosted',
+          type: 'event',
+          inputs: [
+            { indexed: true, name: 'user', type: 'address' },
+            { indexed: false, name: 'message', type: 'string' },
+          ],
+        },
+      ],
+    },
   },
 }

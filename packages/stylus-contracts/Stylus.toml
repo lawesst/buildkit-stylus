@@ -1,3 +1,9 @@
 [workspace]
 [workspace.networks.sepolia]
 endpoint = "https://sepolia-rollup.arbitrum.io/rpc"
+
+[workspace.contracts.nft]
+path = "contracts/nft"
+
+[workspace.contracts.gasless]
+path = "contracts/gasless"
