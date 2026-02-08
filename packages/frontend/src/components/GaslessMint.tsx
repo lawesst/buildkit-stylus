@@ -86,11 +86,16 @@ export function GaslessMint() {
       // Gas limit for post_message (string operations can be gas-intensive)
       const gasLimit = BigInt(200000) // 200k gas limit
 
+      // Convert string to bytes for the contract
+      // The contract accepts Vec<u8> (bytes) parameter
+      // viem expects bytes as a hex string (0x prefixed)
+      const messageBytes = `0x${Buffer.from(message.trim(), 'utf8').toString('hex')}` as `0x${string}`
+      
       writeContract({
         address: GASLESS_CONTRACT_ADDRESS as `0x${string}`,
         abi: GASLESS_ABI,
         functionName: 'post_message',
-        args: [message.trim()],
+        args: [messageBytes],
         maxFeePerGas,
         maxPriorityFeePerGas,
         gas: gasLimit,

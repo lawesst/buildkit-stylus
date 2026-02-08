@@ -1,0 +1,10 @@
+node_modules
+.next
+dist
+target
+*.lock
+*.wasm
+pnpm-lock.yaml
+Cargo.lock
+package-lock.json
+yarn.lock

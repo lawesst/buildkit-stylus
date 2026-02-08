@@ -23,7 +23,7 @@ export const NFT_CONTRACT_ADDRESS = getContractAddress(
 
 export const GASLESS_CONTRACT_ADDRESS = getContractAddress(
   process?.env?.NEXT_PUBLIC_GASLESS_CONTRACT_ADDRESS,
-  '0x21eb06ad92434e07b4afbc96af91d62f3d579bca' // Deployed gasless contract (using bytes in events)
+  '0x65a3d900e447dab898d8fa6fce6e2c1caeb4a2a6' // Deployed gasless contract (emits uint256 message_length)
 )
 
 export const CHAIN_ID = 421614
@@ -106,7 +106,7 @@ export const GASLESS_ABI = [
     inputs: [
       {
         name: 'message',
-        type: 'string',
+        type: 'bytes',
       },
     ],
     outputs: [],
@@ -134,8 +134,8 @@ export const GASLESS_ABI = [
       },
       {
         indexed: false,
-        name: 'message',
-        type: 'bytes',
+        name: 'message_length',
+        type: 'uint256',
       },
     ],
   },

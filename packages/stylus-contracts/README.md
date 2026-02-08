@@ -82,7 +82,7 @@ pnpm stylus:deploy
 
 # Or from this directory
 cd packages/stylus-contracts
-cargo stylus deploy --network sepolia
+cargo stylus deploy --endpoint https://sepolia-rollup.arbitrum.io/rpc --private-key $STYLUS_PRIVATE_KEY
 ```
 
 **What this does:**
@@ -96,6 +96,24 @@ cargo stylus deploy --network sepolia
 Deploying nft...
 Contract deployed at: 0x...
 Transaction hash: 0x...
+```
+
+**Quick Reference Commands:**
+```bash
+# Build all contracts
+cargo stylus build
+
+# Deploy all contracts
+cargo stylus deploy --endpoint https://sepolia-rollup.arbitrum.io/rpc --private-key $STYLUS_PRIVATE_KEY
+
+# Deploy specific contract
+cargo stylus deploy --endpoint https://sepolia-rollup.arbitrum.io/rpc --private-key $STYLUS_PRIVATE_KEY --contract nft
+
+# Generate ABIs
+cargo stylus generate-abi
+
+# Check balance
+./scripts/check-balance.sh [address]
 ```
 
 ### 4. Verify Deployment

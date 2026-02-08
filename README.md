@@ -1,6 +1,20 @@
 # BuildKit (Stylus Edition)
 
+<div align="center">
+
+![BuildKit Stylus](https://img.shields.io/badge/BuildKit-Stylus-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)
+![Rust](https://img.shields.io/badge/rust-1.70%2B-orange)
+![Arbitrum](https://img.shields.io/badge/Arbitrum-Sepolia-blueviolet)
+
 > A developer infrastructure playground for Arbitrum using Stylus (Rust) smart contracts as first-class citizens.
+
+[Features](#-features) • [Quick Start](#-getting-started) • [Documentation](#-documentation) • [Contributing](#-contributing)
+
+</div>
+
+---
 
 BuildKit demonstrates a complete developer workflow for building, deploying, and interacting with Stylus smart contracts on Arbitrum. This project showcases how Rust-compiled WebAssembly contracts integrate seamlessly with existing Ethereum tooling.
 
@@ -51,6 +65,25 @@ Stylus contracts are Rust programs that compile to WebAssembly (WASM) and run on
 - **Separation of Concerns**: Each package has a single responsibility
 - **No Auth**: Hackathon MVP focuses on core functionality
 - **Arbitrum Sepolia Only**: Single testnet to keep scope manageable
+
+### System Architecture
+
+**Data Flow:**
+```
+Stylus Contract (Rust/WASM)
+    ↓ (emits events)
+Blockchain (Arbitrum Sepolia)
+    ↓ (RPC calls)
+Indexer Service
+    ↓ (REST API)
+Frontend/Dashboard
+```
+
+**Key Components:**
+- **Contracts**: Rust → WASM compilation, deployed via `cargo-stylus`
+- **Frontend**: Next.js app with wallet integration (`wagmi` + `viem`)
+- **Indexer**: Node.js service listening to on-chain events
+- **Dashboard**: Analytics visualization of contract activity
 
 ## 🚀 Getting Started
 
@@ -302,7 +335,34 @@ This project is open source and available under the MIT License.
 - **Repository**: https://github.com/lawesst/buildkit-stylus
 - **Arbitrum Sepolia Explorer**: https://sepolia.arbiscan.io/
 - **Stylus Documentation**: https://docs.arbitrum.io/stylus
+- **Issues**: https://github.com/lawesst/buildkit-stylus/issues
+- **Discussions**: https://github.com/lawesst/buildkit-stylus/discussions
+
+## 📊 Project Status
+
+![CI](https://github.com/lawesst/buildkit-stylus/workflows/CI/badge.svg)
+![License](https://img.shields.io/badge/license-MIT-green)
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md) for details.
+
+## 📝 License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+## 🙏 Acknowledgments
+
+- [Arbitrum](https://arbitrum.io/) for Stylus infrastructure
+- [Stylus SDK](https://github.com/OffchainLabs/stylus-sdk-rs) team
+- The Rust and WebAssembly communities
 
 ---
 
-Built with ❤️ for the Arbitrum ecosystem
+<div align="center">
+
+**Built with ❤️ for the Arbitrum ecosystem**
+
+[⬆ Back to Top](#buildkit-stylus-edition)
+
+</div>
